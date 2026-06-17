@@ -37,7 +37,7 @@ function getClient() {
 async function callGemini(title: string, content: string): Promise<string> {
   const genAI = getClient()
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.0-flash',
     systemInstruction: ANALYSIS_SYSTEM_PROMPT,
     generationConfig: {
       responseMimeType: 'application/json',
