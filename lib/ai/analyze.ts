@@ -90,13 +90,13 @@ export async function analyzeArticle(
   }
 }
 
-// Groq 無料枠: 30 RPM。5並列 × 3s間隔で安全に処理
+// Groq 無料枠: 12,000 TPM。順次処理 + 4s間隔でTPM上限を回避
 export async function analyzeArticlesBatch(
   articles: RawArticle[],
   batchDate: string
 ): Promise<NewsArticle[]> {
-  const CONCURRENCY = 5
-  const DELAY_MS = 3000
+  const CONCURRENCY = 1
+  const DELAY_MS = 4000
 
   const results: NewsArticle[] = []
 
