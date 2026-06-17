@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import Groq from 'groq-sdk'
 import { z } from 'zod'
 import { Category, GenerationTag, NewsArticle } from '@/lib/types/news'
 import { RawArticle } from '@/lib/rss/fetch'
@@ -23,29 +23,29 @@ const VALID_GENERATION_TAGS = new Set<string>([
   'gen_alpha', 'gen_z', 'gen_millennial', 'gen_x', 'gen_bubble_dankai_jr', 'gen_senior',
 ])
 
-let _genAI: GoogleGenerativeAI | null = null
+let _client: Groq | null = null
 
-function getClient() {
-  if (!_genAI) {
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) throw new Error('GEMINI_API_KEY is not set')
-    _genAI = new GoogleGenerativeAI(apiKey)
+function getClient(): Groq {
+  if (!_client) {
+    const apiKey = process.env.GROQ_API_KEY
+    if (!apiKey) throw new Error('GROQ_API_KEY is not set')
+    _client = new Groq({ apiKey })
   }
-  return _genAI
+  return _client
 }
 
-async function callGemini(title: string, content: string): Promise<string> {
-  const genAI = getClient()
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-lite',
-    systemInstruction: ANALYSIS_SYSTEM_PROMPT,
-    generationConfig: {
-      responseMimeType: 'application/json',
-      temperature: 0.3,
-    },
+async function callGroq(title: string, content: string): Promise<string> {
+  const client = getClient()
+  const response = await client.chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
+    messages: [
+      { role: 'system', content: ANALYSIS_SYSTEM_PROMPT },
+      { role: 'user', content: buildAnalysisPrompt(title, content) },
+    ],
+    response_format: { type: 'json_object' },
+    temperature: 0.3,
   })
-  const result = await model.generateContent(buildAnalysisPrompt(title, content))
-  return result.response.text()
+  return response.choices[0].message.content ?? ''
 }
 
 export async function analyzeArticle(
@@ -54,7 +54,7 @@ export async function analyzeArticle(
   rank: number
 ): Promise<NewsArticle | null> {
   try {
-    const text = await callGemini(raw.title, raw.content)
+    const text = await callGroq(raw.title, raw.content)
     const parsed = AnalysisResultSchema.parse(JSON.parse(text))
 
     const category = VALID_CATEGORIES.has(parsed.category)
@@ -90,13 +90,13 @@ export async function analyzeArticle(
   }
 }
 
-// Gemini free tier: 15 RPM。5並列 × バッチ間隔でレートリミットを回避
+// Groq 無料枠: 30 RPM。5並列 × 3s間隔で安全に処理
 export async function analyzeArticlesBatch(
   articles: RawArticle[],
   batchDate: string
 ): Promise<NewsArticle[]> {
   const CONCURRENCY = 5
-  const DELAY_MS = 4500 // 5並列 × 4.5s ≒ 13 req/min（15 RPM以内）
+  const DELAY_MS = 3000
 
   const results: NewsArticle[] = []
 
