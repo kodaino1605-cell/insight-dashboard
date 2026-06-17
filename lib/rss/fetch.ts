@@ -14,10 +14,13 @@ const parser = new Parser({
   headers: { 'User-Agent': 'InsightDashboard/1.0' },
 })
 
+const MAX_PER_SOURCE = 5
+
 async function fetchSingleSource(source: RSSSource): Promise<RawArticle[]> {
   const feed = await parser.parseURL(source.url)
   return (feed.items ?? [])
     .filter((item) => item.title && item.link)
+    .slice(0, MAX_PER_SOURCE)
     .map((item) => ({
       title: item.title!.trim(),
       url: item.link!,

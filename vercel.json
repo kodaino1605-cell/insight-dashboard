@@ -4,5 +4,10 @@
       "path": "/api/cron/generate-insights",
       "schedule": "0 23 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "app/api/cron/generate-insights/route.ts": {
+      "maxDuration": 300
+    }
+  }
 }

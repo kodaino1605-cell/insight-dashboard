@@ -84,7 +84,8 @@ export async function analyzeArticle(
       is_fallback: false,
       source_type: 'rss',
     }
-  } catch {
+  } catch (error) {
+    console.error('[analyze] failed:', raw.title.slice(0, 40), error instanceof Error ? error.message : error)
     return null
   }
 }
