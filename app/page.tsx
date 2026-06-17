@@ -1,0 +1,29 @@
+import { Header } from '@/components/layout/header'
+import { CategoryCard } from '@/components/news/category-card'
+import { getAllCategoryMeta, getLatestBatchDate } from '@/lib/data/articles'
+
+export default async function HomePage() {
+  const [categories, batchDate] = await Promise.all([
+    getAllCategoryMeta(),
+    getLatestBatchDate(),
+  ])
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header batchDate={batchDate} />
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">本日のインサイト</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            カテゴリを選択して、世代ごとの価値観・感情・欲望を確認してください
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((meta) => (
+            <CategoryCard key={meta.id} meta={meta} batchDate={batchDate} />
+          ))}
+        </div>
+      </main>
+    </div>
+  )
+}
