@@ -11,21 +11,34 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const result = await runBatchPipeline()
+  try {
+    const result = await runBatchPipeline()
 
-  if (!result.success) {
-    return NextResponse.json(
-      { success: false, error: result.error },
-      { status: 500 }
-    )
+    if (!result.success) {
+      console.error('[cron] pipeline failed:', result.error)
+      return NextResponse.json(
+        { success: false, error: result.error },
+        { status: 500 }
+      )
+    }
+
+    console.log('[cron] success', {
+      article_count: result.articles.length,
+      batch_date: result.batchDate,
+      mock: result.isMock,
+    })
+
+    return NextResponse.json({
+      success: true,
+      article_count: result.articles.length,
+      batch_date: result.batchDate,
+      mock: result.isMock,
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('[cron] uncaught error:', message, error)
+    return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
-
-  return NextResponse.json({
-    success: true,
-    article_count: result.articles.length,
-    batch_date: result.batchDate,
-    mock: result.isMock,
-  })
 }
 
 // Vercel Cron からの GET リクエストにも対応
