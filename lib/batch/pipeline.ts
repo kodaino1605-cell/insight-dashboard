@@ -46,10 +46,17 @@ export async function runBatchPipeline(): Promise<PipelineResult> {
     const ranked = rankAllCategories(analyzed)
     console.log('[pipeline] ranked', { count: ranked.length })
 
-    // 4. Supabaseへ保存（upsertで冪等化）
+    // 4. Supabaseへ保存（ID重複除去 + upsertで冪等化）
+    const seenIds = new Set<string>()
+    const deduped = ranked.filter((a) => {
+      if (seenIds.has(a.id)) return false
+      seenIds.add(a.id)
+      return true
+    })
+    console.log('[pipeline] deduped', { count: deduped.length })
     const { error: insertError } = await db
       .from('news_articles')
-      .upsert(ranked, { onConflict: 'id' })
+      .upsert(deduped, { onConflict: 'id' })
     if (insertError) throw new Error(`DB保存エラー: ${insertError.message}`)
     console.log('[pipeline] saved to supabase')
 
