@@ -24,26 +24,26 @@ export default async function CategoryPage({ params }: PageProps) {
   ])
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen">
       <Header batchDate={batchDate} />
       <main className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="mb-10">
-          <div className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-gray-400">
-            <Link href="/" className="transition-colors hover:text-indigo-500">
+          <div className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/30">
+            <Link href="/" className="transition-colors hover:text-indigo-400">
               Dashboard
             </Link>
             <span>·</span>
-            <span className="text-gray-600">{meta.label}</span>
+            <span className="text-white/55">{meta.label}</span>
           </div>
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-semibold tracking-tight text-gray-900">{meta.label}</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-white/90">{meta.label}</h2>
             {meta.id === 'jk_trend' && (
-              <span className="rounded border border-gray-200 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-gray-400">
+              <span className="rounded border border-white/[0.12] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white/30">
                 Beta · データソース拡充予定
               </span>
             )}
           </div>
-          <p className="mt-1.5 text-sm text-gray-400">{meta.description}</p>
+          <p className="mt-1.5 text-sm text-white/40">{meta.description}</p>
         </div>
 
         <CategoryNewsList articles={articles} />

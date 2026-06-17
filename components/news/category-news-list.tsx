@@ -19,7 +19,7 @@ export function CategoryNewsList({ articles }: CategoryNewsListProps) {
           <NewsCard key={article.id} article={article} onClick={() => setSelected(article)} />
         ))}
         {articles.length === 0 && (
-          <p className="col-span-3 py-12 text-center text-sm text-gray-400">
+          <p className="col-span-3 py-12 text-center text-sm text-white/30">
             本日の記事はまだ生成されていません
           </p>
         )}
