@@ -29,13 +29,13 @@ export function NewsDetailModal({ article, onClose }: NewsDetailModalProps) {
         <div className="flex flex-shrink-0 items-start justify-between px-7 py-5">
           <div className="flex-1 pr-4">
             <div className="mb-2 flex items-center gap-2">
-              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-400">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-400">
                 {article.source_name}
               </span>
-              <span className="font-mono text-[10px] text-white/20">·</span>
-              <span className="font-mono text-[10px] text-white/30">#{article.rank}</span>
+              <span className="font-mono text-[11px] text-white/20">·</span>
+              <span className="font-mono text-[11px] text-white/30">#{article.rank}</span>
             </div>
-            <h2 className="text-base font-semibold leading-snug tracking-tight text-white/90">
+            <h2 className="text-[18px] font-semibold leading-snug tracking-tight text-white/90">
               {article.title}
             </h2>
           </div>
@@ -62,7 +62,7 @@ export function NewsDetailModal({ article, onClose }: NewsDetailModalProps) {
                 href={article.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.15em] text-indigo-400 transition-colors hover:text-indigo-300"
+                className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em] text-indigo-400 transition-colors hover:text-indigo-300"
               >
                 元記事を読む
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -80,10 +80,10 @@ export function NewsDetailModal({ article, onClose }: NewsDetailModalProps) {
 function Section({ label, content, first }: { label: string; content: string; first?: boolean }) {
   return (
     <div className={`py-5 ${first ? '' : 'border-t border-white/[0.06]'}`}>
-      <span className="mb-2 block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
+      <span className="mb-2 block font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-white/40">
         {label}
       </span>
-      <p className="text-sm leading-7 text-white/70">{content}</p>
+      <p className="text-[15px] leading-7 text-white/75">{content}</p>
     </div>
   )
 }

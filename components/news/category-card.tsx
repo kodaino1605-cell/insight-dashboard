@@ -14,11 +14,11 @@ export function CategoryCard({ meta, batchDate }: CategoryCardProps) {
 
   return (
     <Link href={`/category/${meta.id}`} className="block group">
-      <div className="flex overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-sm transition-all duration-200 hover:border-indigo-400/30 hover:bg-white/[0.07] hover:shadow-[0_4px_32px_rgba(79,70,229,0.12)]">
+      <div className="flex overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-200 hover:border-indigo-400/30 hover:bg-white/[0.07] hover:shadow-[0_4px_32px_rgba(79,70,229,0.12)]">
         <div className="w-[3px] flex-shrink-0 bg-indigo-500" />
         <div className="flex flex-1 flex-col p-6">
           <div className="mb-3 flex items-center justify-between">
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-400">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-400">
               {meta.label}
             </span>
             {isJK && (
@@ -27,10 +27,10 @@ export function CategoryCard({ meta, batchDate }: CategoryCardProps) {
               </span>
             )}
           </div>
-          <p className="flex-1 text-[0.8125rem] leading-6 text-white/50">{meta.description}</p>
+          <p className="flex-1 text-[14px] leading-6 text-white/65">{meta.description}</p>
           <div className="mt-5 flex items-center justify-between">
-            <span className="font-mono text-[10px] text-white/25">{dateLabel}</span>
-            <span className="font-mono text-[10px] text-white/25 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <span className="font-mono text-[11px] text-white/25">{dateLabel}</span>
+            <span className="font-mono text-[11px] text-white/25 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               3 insights ↗
             </span>
           </div>

@@ -18,7 +18,7 @@ export default async function HomePage() {
             カテゴリを選択して、世代ごとの価値観・感情・欲望・マーケティング示唆を確認してください
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((meta) => (
             <CategoryCard key={meta.id} meta={meta} batchDate={batchDate} />
           ))}
