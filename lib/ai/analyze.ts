@@ -66,7 +66,7 @@ export async function analyzeArticle(
     )
 
     return {
-      id: `${batchDate}-${Buffer.from(raw.url).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 16)}`,
+      id: `${batchDate}-${require('crypto').createHash('sha256').update(raw.url).digest('hex').slice(0, 20)}`,
       title: raw.title,
       summary: parsed.summary,
       background_emotion: parsed.background_emotion,
