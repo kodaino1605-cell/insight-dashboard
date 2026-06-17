@@ -46,9 +46,10 @@ export async function runBatchPipeline(): Promise<PipelineResult> {
     const ranked = rankAllCategories(analyzed)
     console.log('[pipeline] ranked', { count: ranked.length })
 
-    // 4. Supabaseへ保存（当日分を先に削除して冪等化）
-    await db.from('news_articles').delete().eq('batch_date', batchDate)
-    const { error: insertError } = await db.from('news_articles').insert(ranked)
+    // 4. Supabaseへ保存（upsertで冪等化）
+    const { error: insertError } = await db
+      .from('news_articles')
+      .upsert(ranked, { onConflict: 'id' })
     if (insertError) throw new Error(`DB保存エラー: ${insertError.message}`)
     console.log('[pipeline] saved to supabase')
 
