@@ -1,7 +1,25 @@
-import { Category, NewsArticle } from '@/lib/types/news'
+import { Category, NewsArticle, CATEGORY_META } from '@/lib/types/news'
 
-// 将来: スコアリングロジックを実装してカテゴリ内上位3件を選定する
-export function rankArticles(articles: NewsArticle[], _category: Category): NewsArticle[] {
-  // stub: 本実装では速報性・ソース信頼度・関連度・インパクトでスコアリング
-  return articles.slice(0, 3)
+// カテゴリ別に上位3件を選定してランクを付与する
+export function rankAllCategories(articles: NewsArticle[]): NewsArticle[] {
+  const byCategory = new Map<Category, NewsArticle[]>()
+
+  for (const meta of CATEGORY_META) {
+    byCategory.set(meta.id, [])
+  }
+
+  for (const article of articles) {
+    const list = byCategory.get(article.category)
+    if (list) list.push(article)
+  }
+
+  const ranked: NewsArticle[] = []
+  for (const [, list] of byCategory) {
+    // 最大3件、ランク番号を付与
+    list.slice(0, 3).forEach((a, i) => {
+      ranked.push({ ...a, rank: i + 1 })
+    })
+  }
+
+  return ranked
 }

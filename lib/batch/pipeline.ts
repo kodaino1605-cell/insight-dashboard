@@ -1,5 +1,10 @@
 import { NewsArticle } from '@/lib/types/news'
 import { MOCK_ARTICLES } from '@/lib/mock/data'
+import { RSS_SOURCES } from '@/lib/rss/sources'
+import { fetchRSSArticles } from '@/lib/rss/fetch'
+import { analyzeArticlesBatch } from '@/lib/ai/analyze'
+import { rankAllCategories } from './ranking'
+import { getServiceClient } from '@/lib/supabase/client'
 
 export interface PipelineResult {
   success: boolean
@@ -9,32 +14,61 @@ export interface PipelineResult {
   error?: string
 }
 
-// バッチ処理のオーケストレーター
-// 将来: RSS収集 → 重複排除 → 世代/カテゴリ分類 → AI分析 → 上位3件選定 → Supabase保存
+const isProduction = !!(
+  process.env.GEMINI_API_KEY &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
+
 export async function runBatchPipeline(): Promise<PipelineResult> {
   const batchDate = new Date().toISOString().split('T')[0]
 
-  try {
-    // 将来のステップ（スタブ）:
-    // 1. const rawArticles = await fetchRSSArticles(RSS_SOURCES)
-    // 2. const deduplicated = deduplicateArticles(rawArticles)
-    // 3. const analyzed = await Promise.all(deduplicated.map(a => analyzeArticle(a, batchDate, 0)))
-    // 4. const ranked = rankAllCategories(analyzed.filter(Boolean))
-    // 5. await saveToSupabase(ranked, batchDate)
+  if (!isProduction) {
+    return { success: true, articles: MOCK_ARTICLES, batchDate, isMock: true }
+  }
 
-    return {
-      success: true,
-      articles: MOCK_ARTICLES,
-      batchDate,
-      isMock: true,
-    }
+  const startedAt = new Date().toISOString()
+  const db = getServiceClient()
+
+  try {
+    // 1. RSS収集
+    const rawArticles = await fetchRSSArticles(RSS_SOURCES)
+    if (rawArticles.length === 0) throw new Error('RSS収集結果が0件')
+
+    // 2. Gemini分析（レートリミット考慮のバッチ処理）
+    const analyzed = await analyzeArticlesBatch(rawArticles, batchDate)
+    if (analyzed.length === 0) throw new Error('AI分析結果が0件')
+
+    // 3. カテゴリ別上位3件を選定
+    const ranked = rankAllCategories(analyzed)
+
+    // 4. Supabaseへ保存（当日分を先に削除して冪等化）
+    await db.from('news_articles').delete().eq('batch_date', batchDate)
+    const { error: insertError } = await db.from('news_articles').insert(ranked)
+    if (insertError) throw new Error(`DB保存エラー: ${insertError.message}`)
+
+    // 5. バッチ実行ログを記録
+    await db.from('batch_runs').upsert({
+      batch_date: batchDate,
+      status: 'success',
+      article_count: ranked.length,
+      started_at: startedAt,
+      finished_at: new Date().toISOString(),
+    })
+
+    return { success: true, articles: ranked, batchDate, isMock: false }
   } catch (error) {
-    return {
-      success: false,
-      articles: [],
-      batchDate,
-      isMock: true,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+    await db.from('batch_runs').upsert({
+      batch_date: batchDate,
+      status: 'failed',
+      article_count: 0,
+      error_message: errorMessage,
+      started_at: startedAt,
+      finished_at: new Date().toISOString(),
+    })
+
+    return { success: false, articles: [], batchDate, isMock: false, error: errorMessage }
   }
 }
