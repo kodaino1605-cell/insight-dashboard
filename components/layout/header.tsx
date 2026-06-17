@@ -4,30 +4,34 @@ interface HeaderProps {
 }
 
 export function Header({ batchDate, isFallback }: HeaderProps) {
-  const formatted = new Date(batchDate).toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  const [year, month, day] = batchDate.split('-')
+  const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+  const formatted = `${monthNames[parseInt(month) - 1]} ${day}, ${year} · 08:00 JST`
 
   return (
-    <header className="border-b border-gray-200 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              Generational Insight Dashboard
-            </h1>
-            <p className="text-sm text-gray-500">世代別インサイト分析ツール</p>
-          </div>
-          <div className="text-right text-sm">
-            {isFallback ? (
-              <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-amber-700 ring-1 ring-amber-600/20">
-                前日のデータを表示中
+    <header className="bg-white">
+      <div className="h-[2px] bg-indigo-600" />
+      <div className="border-b border-gray-100">
+        <div className="mx-auto max-w-7xl px-6 py-4 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-indigo-600">
+                GID
               </span>
-            ) : (
-              <span className="text-gray-500">{formatted} 8:00 更新</span>
-            )}
+              <div className="h-4 w-px bg-gray-200" />
+              <h1 className="text-sm font-semibold tracking-tight text-gray-900">
+                Generational Insight Dashboard
+              </h1>
+            </div>
+            <div>
+              {isFallback ? (
+                <span className="inline-flex items-center rounded border border-amber-200 bg-amber-50 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-600">
+                  前日のデータを表示中
+                </span>
+              ) : (
+                <span className="font-mono text-[11px] text-gray-400">{formatted}</span>
+              )}
+            </div>
           </div>
         </div>
       </div>

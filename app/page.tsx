@@ -9,13 +9,13 @@ export default async function HomePage() {
   ])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafafa]">
       <Header batchDate={batchDate} />
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">本日のインサイト</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            カテゴリを選択して、世代ごとの価値観・感情・欲望を確認してください
+      <main className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+        <div className="mb-10">
+          <h2 className="text-xl font-semibold tracking-tight text-gray-900">本日のインサイト</h2>
+          <p className="mt-1.5 text-sm text-gray-400">
+            カテゴリを選択して、世代ごとの価値観・感情・欲望・マーケティング示唆を確認してください
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
